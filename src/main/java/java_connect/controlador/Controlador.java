@@ -1,6 +1,8 @@
 
 package java_connect.controlador;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +20,8 @@ public class Controlador {
     public static void AddSocioEstandar(String nif, String tipoSeguro, String nombre) {
         Seguro seguro = new Seguro(tipoSeguro);
         SocioEstandar socioE = new SocioEstandar (nif, seguro, nombre);
-        Datos.socioList.add(socioE);
+        socioE.altaSocioEstandar();
+    //    Datos.socioList.add(socioE);
     }
     
     
@@ -30,25 +33,32 @@ public class Controlador {
     }
     
     public static void AddSocioFederado(String nif, String federacion, String nombre) {
-        Federacion fede = null;
-        for(Federacion fed : Datos.federacionList){
+        Federacion fede = new Federacion(federacion);
+        /*for(Federacion fed : Datos.federacionList){
             if(fed.GetNombre().equals(federacion)){
                 fede = fed;
             }
+        }*/
+        if (!fede.existeFederacion(federacion)){
+            fede.altaFederacion();
         }
-        if (fede == null) fede = new Federacion(federacion);
         
         SocioFederado socioF = new SocioFederado (nif, fede, nombre);
-        Datos.socioList.add(socioF);
+        socioF.altoSocioFederado();
+        //Datos.socioList.add(socioF);
     }
     
     public static void AddSocioInfantil(String nombre) {
         SocioInfantil socioI = new SocioInfantil (nombre);
-        Datos.socioList.add(socioI);
+        socioI.altaSocioInfantil();
+        //Datos.socioList.add(socioI);
     }
     
     public static List<Socio> obtenerListaSocios(){
-        return Datos.socioList;
+        List<Socio> listado = obtenerListaSociosEstandar();
+        listado.addAll(obtenerListaSociosFederados());
+        return listado;
+        //return Datos.socioList;
     }
 
     public static boolean EliminarSocio(int nsocio) {
@@ -65,10 +75,40 @@ public class Controlador {
 
     public static List<Socio> obtenerListaSociosEstandar() {
         List<Socio> filtrado = new ArrayList<Socio>();
-        for(Socio socio: Datos.socioList){
+        /*for(Socio socio: Datos.socioList){
             if(socio instanceof SocioEstandar){
                 filtrado.add(socio);
             }
+        }*/
+        ResultSet rs = SocioEstandar.mostrarSocioEstandar();
+        if (rs == null) return filtrado;
+        try {
+            while(rs.next()){
+                Seguro seg = new Seguro(rs.getNString("tipo"));
+                SocioEstandar se = new SocioEstandar(rs.getInt("id"),rs.getNString("nif"), seg, rs.getNString("nombre"));
+                filtrado.add(se);
+            }
+        } catch (SQLException ex) {
+        }
+        return filtrado;
+    }
+
+    public static List<Socio> obtenerListaSociosFederados() {
+        List<Socio> filtrado = new ArrayList<Socio>();
+        /*for(Socio socio: Datos.socioList){
+            if(socio instanceof SocioEstandar){
+                filtrado.add(socio);
+            }
+        }*/
+        ResultSet rs = SocioFederado.mostrarSocioFederado();
+        if (rs == null) return filtrado;
+        try {
+            while(rs.next()){
+                Federacion fed = new Federacion(rs.getNString("federacion"));
+                SocioFederado sf = new SocioFederado(rs.getNString("nif"), fed, rs.getNString("nombre"));
+                filtrado.add(sf);
+            }
+        } catch (SQLException ex) {
         }
         return filtrado;
     }
@@ -93,33 +133,38 @@ public class Controlador {
     }
     
     public static void modificarSeguroSocio(int nsocio, String seguro){
-        SocioEstandar socio = (SocioEstandar) obtenerSocio(nsocio);
+        
+        SocioEstandar socio = (SocioEstandar) SocioEstandar.obtenerSocioEstandar(nsocio);
         socio.SetSeguro(new Seguro(seguro));
             
     }
 
     public static void crearExcursion(String descripcion, Double precio, Date fecha, int dias) {
         Excursion excursion = new Excursion(descripcion, precio, fecha, dias);
-        Datos.excursionList.add(excursion);
+        excursion.aniadirExcursiones();
+        //Datos.excursionList.add(excursion);
     }
     
     public static List<Excursion> filtrarExcursiones(Date fechaInicio, Date fechaFin){
-        List<Excursion> filtrada = new ArrayList<Excursion>();
+        /*List<Excursion> filtrada = new ArrayList<Excursion>();
         for(Excursion excursion : Datos.excursionList){
             Date fechaExcursion = excursion.GetFecha();
             if (fechaExcursion.after(fechaInicio) && fechaExcursion.before(fechaFin)){
                 filtrada.add(excursion);
             }
         }
-        return filtrada;
+        return filtrada;*/
+        return Excursion.FiltrarExcursiones(fechaInicio, fechaFin);
     }
 
     public static List<Excursion> obtenerListaExcursiones() {
-        return Datos.excursionList;
+        return Excursion.mostrarExcursiones();
+        //return Datos.excursionList;
     }
 
-    public static List<Inscripcion> obtenerListaInscripciones() {
-        return Datos.inscripcionList;
+    public static List<Inscripcion> obtenerListaInscripciones(String nombre, Date fecha) {
+        return Inscripcion.mostrarInscripcion(nombre, fecha);
+        //return Datos.inscripcionList;
     }
     
     
@@ -147,7 +192,8 @@ public class Controlador {
         Socio socio = obtenerSocio(nsocio);
         Excursion excursion = obtenerExcursion(nexcursion);
         Inscripcion inscripcion = new Inscripcion(socio, excursion);
-        Datos.inscripcionList.add(inscripcion);
+        inscripcion.altaInscripcion(nsocio, nexcursion);
+        //Datos.inscripcionList.add(inscripcion);
     }
 
     public static boolean EliminarInscripcion(int ninscripcion) {

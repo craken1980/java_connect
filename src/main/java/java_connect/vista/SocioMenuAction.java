@@ -51,9 +51,10 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
         try{
             int nsocio = sc.nextInt();
             sc.nextLine();
-            if (!Controlador.EliminarSocio(nsocio)){
+            if (!Socio.existeSocio(nsocio)){
                 System.out.println("El numero de socio introducido no existe");
             }
+            Socio.eliminarSocio(nsocio);
             System.out.println("El socio se ha eliminado correctamente");
         } catch(Exception ex){
             System.out.println("El valor introducido no es válido");
@@ -71,7 +72,7 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
             System.out.println("El Nº de Socio introducido no es válido");
             return;
         }
-        if(!Controlador.existeSocio(nsocio)){
+        if(!Socio.existeSocio(nsocio)){
             System.out.println("El Nº de Socio introducido no existe");
             return;
         }

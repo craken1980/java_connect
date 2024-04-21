@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java_connect.util.MySqlConection;
+import java_connect.util.MySQLConection;
 import java_connect.vista.*;
 
 public class Main {
@@ -43,7 +43,7 @@ public class Main {
 
     private static void verificarConexion() {
         try {
-            Connection conexion = MySqlConection.getConnection();
+            Connection conexion = MySQLConection.getConnection();
             System.out.println("Conexión exitosa");
 
         } catch (SQLException ex) {

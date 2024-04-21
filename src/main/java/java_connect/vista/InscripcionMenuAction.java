@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java_connect.controlador.Controlador;
+import java_connect.modelo.Excursion;
 import java_connect.modelo.Inscripcion;
+import java_connect.modelo.Socio;
 
 public class InscripcionMenuAction extends MenuAction implements IMenuAction {
     private String accion = "";
@@ -45,7 +47,7 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
             System.out.println("El valor introducido no es válido");
             return;
         }
-        if (!Controlador.existeSocio(nsocio)){
+        if (!Socio.existeSocio(nsocio)){
             System.out.println("El socio Nº de socio que ha introducido no existe");
             return;
         }
@@ -62,7 +64,7 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
             System.out.println("El valor introducido no es válido");
             return;
         }
-        if (!Controlador.existeExcursion(nexcursion)){
+        if (!Excursion.existeExcursion(nexcursion)){
             System.out.println("El Nº de excursion que ha introducido no existe");
             return;
         }
@@ -78,7 +80,7 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
     }
     
     private void eliminarInscripcion() {
-        imprimirListaInscripciones(Controlador.obtenerListaInscripciones());
+        imprimirListaInscripciones(Controlador.obtenerListaInscripciones(null, null));
         System.out.println("Introduzca el Nº de Inscripcion que desea eliminar:");
         try{
             int ninscripcion = sc.nextInt();
@@ -93,25 +95,24 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
     }
 
     private void filtrarInscripciones() {
-        List<Inscripcion> resultado = Controlador.obtenerListaInscripciones();
         System.out.println("Desea filtrar por socio? (s/n)");
+        String nombre = null;
+        Date fecha = null;
         if (sc.nextLine().equals("s")){
             System.out.println("Introduzca el nombre del socio");
-            resultado = Controlador.filtarInscripcionesPorSocio(resultado, sc.nextLine());
+            nombre = sc.nextLine();
         }
         System.out.println("Desea filtrar por fecha? (s/n)");
         if (sc.nextLine().equals("s")){
             System.out.println("Introduzca la fecha por la que desea filtrar");
             String fechaString = sc.nextLine();
-            Date fecha;
             try{
                 fecha = new Date(fechaString);
             }catch(Exception ex){
                 System.out.println("La fecha introducida no es valida");
                 return;
             }
-            resultado = Controlador.filtarInscripcionesPorFecha(resultado, fecha);
         }
-        imprimirListaInscripciones(resultado);
+        imprimirListaInscripciones(Controlador.obtenerListaInscripciones(nombre, fecha));
     }
 }
