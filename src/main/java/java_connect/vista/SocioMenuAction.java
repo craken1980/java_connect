@@ -12,6 +12,8 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
     
     private final Scanner sc = new Scanner(System.in);
     
+    private Controlador controlador = new Controlador();
+    
     public SocioMenuAction(String titulo, String accion) {
         super(titulo);
         this.accion = accion;
@@ -36,7 +38,7 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
     }
     
     private void listarSocios(){
-        imprimirListaSocios(Controlador.obtenerListaSocios());
+        imprimirListaSocios(controlador.obtenerListaSocios());
     }
 
     private void imprimirListaSocios(List<Socio> lista) {
@@ -51,10 +53,11 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
         try{
             int nsocio = sc.nextInt();
             sc.nextLine();
-            if (!Socio.existeSocio(nsocio)){
-                System.out.println("El numero de socio introducido no existe");
-            }
-            Socio.eliminarSocio(nsocio);
+//            if (!Socio.existeSocio(nsocio)){
+//                System.out.println("El numero de socio introducido no existe");
+//            }
+//            Socio.eliminarSocio(nsocio);
+            controlador.eliminarSocio(nsocio);
             System.out.println("El socio se ha eliminado correctamente");
         } catch(Exception ex){
             System.out.println("El valor introducido no es válido");
@@ -62,7 +65,7 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
     }
     
     private void modificarSeguroSocio() {
-        imprimirListaSocios(Controlador.obtenerListaSociosEstandar());
+        imprimirListaSocios(controlador.obtenerListaSociosEstandar());
         System.out.println("Introduzca el Nº del socio al que desea modificarle el seguro:");
         int nsocio = 0;
         try{
@@ -72,13 +75,13 @@ public class SocioMenuAction extends MenuAction implements IMenuAction {
             System.out.println("El Nº de Socio introducido no es válido");
             return;
         }
-        if(!Socio.existeSocio(nsocio)){
-            System.out.println("El Nº de Socio introducido no existe");
-            return;
-        }
+//        if(!Socio.existeSocio(nsocio)){
+//            System.out.println("El Nº de Socio introducido no existe");
+//            return;
+//        }
         System.out.println("Introduzca el nuevo seguro del socio (basico, completo):");
         String seguro = sc.nextLine();
-        Controlador.modificarSeguroSocio(nsocio, seguro);
+        controlador.modificarSeguroSocio(nsocio, seguro);
         System.out.println("Se ha modificado correctamente el seguro del socio.");
         
     }

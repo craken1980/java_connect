@@ -1,118 +1,69 @@
 package java_connect.modelo;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java_connect.util.MySQLConection;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "seguros")
 public class Seguro {
 
-    public static enum TipoSeguro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo")
+    private TipoSeguro tipo;
+
+    @Column(name = "precio")
+    private double precio;
+
+    public enum TipoSeguro {
         BASICO, COMPLETO
     }
 
-    private TipoSeguro tipo;
-    private double precio;
-    private Connection conexion;
+    public Seguro() {
+    }
 
     public Seguro(String tipoSeguro) {
-        try {
-            this.conexion = MySQLConection.getConnection();
-        } catch (SQLException ex) {
-        }
         switch (tipoSeguro.toLowerCase()) {
             case "basico":
                 this.precio = 15;
                 this.tipo = TipoSeguro.BASICO;
-                if (!this.existeSeguro(this.tipo.name())){
-                    this.altaSeguro();
-                }
                 break;
             case "completo":
                 this.precio = 20;
                 this.tipo = TipoSeguro.COMPLETO;
-                if (!this.existeSeguro(this.tipo.name())){
-                    this.altaSeguro();
-                }
                 break;
             default:
-                throw new RuntimeException("Seguro no válido");
+                throw new RuntimeException("Tipo de seguro no válido");
         }
     }
 
-    public TipoSeguro GetTipo() {
+    // Getters y Setters
+    public TipoSeguro getTipo() {
         return this.tipo;
     }
 
-    public void SetTipo(TipoSeguro newTipo) {
+    public void setTipo(TipoSeguro newTipo) {
         this.tipo = newTipo;
     }
 
-    public double GetPrecio() {
+    public double getPrecio() {
         return this.precio;
     }
 
-    public void SetPrecio(double newPrecio) {
+    public void setPrecio(double newPrecio) {
         this.precio = newPrecio;
     }
 
-    public TipoSeguro GetTipoSeguro() {
-        return this.tipo;
-    }
-
-    public void SetTipoSeguro(TipoSeguro newTipoSeguro) {
-        this.tipo = newTipoSeguro;
-    }
-
-    public void cancelarSeguro() {
-
-    }
-
-    public void calcularPrecio() {
-
-    }
-
-    public void altaSeguro() {
-        String sql = "Insert into Seguros (tipo,precio) values (?,?)";
-        try {
-            PreparedStatement stmt = conexion.prepareStatement(sql);
-            stmt.setString(1, this.tipo.name());
-            stmt.setDouble(2, this.precio);
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("No se pudo crear el Socio");
-        }
-    }
-
-    public boolean existeSeguro(String tipo) {
-        String sql = "SELECT COUNT(1) FROM seguros WHERE tipo = ?";
-        try {
-            PreparedStatement stmt = conexion.prepareStatement(sql);
-            stmt.setString(1, tipo);
-            ResultSet rs = stmt.executeQuery();
-            if (rs == null) {
-                return false;
-            }
-            rs.next();
-            int numero = rs.getInt(1);
-            return numero > 0;
-        } catch (SQLException ex) {
-            System.out.println("No se pudo ejecutar la consulta para saber si existe la federacion");
-        }
-        return false;
-    }
-
-    public void mostrarSeguro() {
-
-    }
-
-    public void eliminarSeguro() {
-
-    }
-
+    @Override
     public String toString() {
-
-        return " ";
+        return "Seguro{" +
+               "id=" + id +
+               ", tipo=" + tipo +
+               ", precio=" + precio +
+               '}';
     }
+
+    // Métodos como 'altaSeguro' y 'existeSeguro' deberían ser gestionados por una capa de servicio o repositorio.
 }

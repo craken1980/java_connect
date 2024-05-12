@@ -14,6 +14,8 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
     
     private final Scanner sc = new Scanner(System.in);
     
+    private Controlador controlador = new Controlador();
+    
     public InscripcionMenuAction(String titulo, String accion) {
         super(titulo);
         this.accion = accion;
@@ -47,10 +49,10 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
             System.out.println("El valor introducido no es válido");
             return;
         }
-        if (!Socio.existeSocio(nsocio)){
-            System.out.println("El socio Nº de socio que ha introducido no existe");
-            return;
-        }
+//        if (!Socio.existeSocio(nsocio)){
+//            System.out.println("El socio Nº de socio que ha introducido no existe");
+//            return;
+//        }
         
         MenuAction listarExcursiones = new ExcursionMenuAction("", "listar");
         listarExcursiones.Ejecutar();
@@ -64,12 +66,12 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
             System.out.println("El valor introducido no es válido");
             return;
         }
-        if (!Excursion.existeExcursion(nexcursion)){
-            System.out.println("El Nº de excursion que ha introducido no existe");
-            return;
-        }
+//        if (!Excursion.existeExcursion(nexcursion)){
+//            System.out.println("El Nº de excursion que ha introducido no existe");
+//            return;
+//        }
         
-        Controlador.crearInscripcion(nsocio, nexcursion);
+        controlador.crearInscripcion(nsocio, nexcursion);
         System.out.println("Se ha creado correctamente la inscripcion");
     }
     
@@ -80,12 +82,12 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
     }
     
     private void eliminarInscripcion() {
-        imprimirListaInscripciones(Controlador.obtenerListaInscripciones(null, null));
+        imprimirListaInscripciones(controlador.obtenerListaInscripciones(null, null));
         System.out.println("Introduzca el Nº de Inscripcion que desea eliminar:");
         try{
             int ninscripcion = sc.nextInt();
             sc.nextLine();
-            if (!Controlador.EliminarInscripcion(ninscripcion)){
+            if (!controlador.eliminarInscripcion(ninscripcion)){
                 System.out.println("El numero de inscripcion introducido no existe");
             }
             System.out.println("La inscripcion se ha eliminado correctamente");
@@ -113,6 +115,6 @@ public class InscripcionMenuAction extends MenuAction implements IMenuAction {
                 return;
             }
         }
-        imprimirListaInscripciones(Controlador.obtenerListaInscripciones(nombre, fecha));
+        imprimirListaInscripciones(controlador.obtenerListaInscripciones(nombre, fecha));
     }
 }

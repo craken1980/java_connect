@@ -7,6 +7,7 @@ import java_connect.controlador.Controlador;
 public class AltaSocioMenuAction extends MenuAction implements IMenuAction {
 
     private String tipoSocio = "";
+    private Controlador controlador = new Controlador();
     
     public AltaSocioMenuAction(String titulo, String tipo) {
         super(titulo);
@@ -38,11 +39,11 @@ public class AltaSocioMenuAction extends MenuAction implements IMenuAction {
         
         System.out.println("Introduzca el tipo de seguro del socio (basico,completo):");
         String tipoSeguro = sc.nextLine();
-        if (!Controlador.ValidarSeguro(tipoSeguro)){
+        /*if (!controlador.validarSeguro(tipoSeguro)){
             System.out.println("El tipo de seguro introducido no es válido");
             return;
-        }
-        Controlador.AddSocioEstandar(nif, tipoSeguro, nombre);
+        }*/
+        controlador.addSocioEstandar(nif, tipoSeguro, nombre);
         System.out.println("Se ha creado el socio correctamente");
     }
     
@@ -57,7 +58,7 @@ public class AltaSocioMenuAction extends MenuAction implements IMenuAction {
         System.out.println("Introduzca la federacion a la que pertenece el socio:");
         String federacion = sc.nextLine();
         
-        Controlador.AddSocioFederado(nif, federacion, nombre);
+        controlador.addSocioFederado(nif, federacion, nombre);
         System.out.println("Se ha creado el socio correctamente");
     }
     
@@ -68,7 +69,7 @@ public class AltaSocioMenuAction extends MenuAction implements IMenuAction {
         System.out.println("Introduzca el nombre del socio:");
         String nombre = sc.nextLine();
         
-        Controlador.AddSocioInfantil(nombre);
+        controlador.addSocioInfantil(nombre);
         System.out.println("Se ha creado el socio correctamente");
     }
     

@@ -14,7 +14,7 @@ public class Main {
         MenuSocios menuS = new MenuSocios();
         MenuInscripciones menuI = new MenuInscripciones();
         MenuExcursiones menuE = new MenuExcursiones();
-        verificarConexion();
+//        verificarConexion();
         while (true) {
             System.out.println("Menu Principal");
             menuP.imprimir();
@@ -41,14 +41,14 @@ public class Main {
         }
     }
 
-    private static void verificarConexion() {
-        try {
-            Connection conexion = MySQLConection.getConnection();
-            System.out.println("Conexión exitosa");
-
-        } catch (SQLException ex) {
-            System.out.println("No se pudo establecer conexión con la base de datos");
-        }
-    }
+//    private static void verificarConexion() {
+//        try {
+//            Connection conexion = MySQLConection.getConnection();
+//            System.out.println("Conexión exitosa");
+//
+//        } catch (SQLException ex) {
+//            System.out.println("No se pudo establecer conexión con la base de datos");
+//        }
+//    }
 
 }

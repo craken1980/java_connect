@@ -11,6 +11,7 @@ public class ExcursionMenuAction extends MenuAction implements IMenuAction {
     private String accion = "";
     
     private final Scanner sc = new Scanner(System.in);
+    private Controlador controlador = new Controlador();
     
     public ExcursionMenuAction(String titulo, String accion) {
         super(titulo);
@@ -68,7 +69,7 @@ public class ExcursionMenuAction extends MenuAction implements IMenuAction {
             return;
         }
         
-        Controlador.crearExcursion(descripcion, precio, fecha, dias);
+        controlador.crearExcursion(descripcion, precio, fecha, dias);
         System.out.println("Se ha creado la excursion correctamente");
     }
     
@@ -104,12 +105,12 @@ public class ExcursionMenuAction extends MenuAction implements IMenuAction {
             return;
         }
         
-        imprimirListaExcursiones(Controlador.filtrarExcursiones(fechaInicio, fechaFin));
+        imprimirListaExcursiones(controlador.filtrarExcursiones(fechaInicio, fechaFin));
         
     }
 
     private void mostrarExcursiones() {
-        imprimirListaExcursiones(Controlador.obtenerListaExcursiones());
+        imprimirListaExcursiones(controlador.obtenerListaExcursiones());
     }
     
 }

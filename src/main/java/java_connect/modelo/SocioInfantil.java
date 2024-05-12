@@ -1,40 +1,27 @@
 package java_connect.modelo;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java_connect.util.MySQLConection;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "sociosinfantiles")
+@PrimaryKeyJoinColumn(name = "socio_id")
 public class SocioInfantil extends Socio {
 
-    private Connection conexion;
+    public SocioInfantil() {
+    }
 
     public SocioInfantil(String nombre) {
         super(nombre);
-
-        try {
-            this.conexion = MySQLConection.getConnection();
-        } catch (SQLException ex) {
-        }
     }
 
-    public void altaSocioInfantil() {
-        int socioId = (int) this.altaSocio();
-        String sql = "Insert into sociosinfantiles (socio_id) values (?)";
-        try {
-            PreparedStatement stmt = conexion.prepareStatement(sql);
-            stmt.setInt(1, socioId);
-            stmt.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("No se pudo crear el socio estandar");
-        }
-    }
+    // La gestión directa de la base de datos para altas debe ser manejada en la capa de servicio o repositorio.
+    // Este método es eliminado de aquí y se recomienda implementarlo en el repositorio correspondiente.
 
-    public void mostrarSocioInfantil() {
-
-    }
-
+    @Override
     public String toString() {
-        return "Nº " + this.GetNsocio() + " Socio Infantil " + this.GetNombre();
+        return "Nº " + this.getNSocio() + " Socio Infantil " + this.getNombre();
     }
+
+    // Cualquier método adicional para manejar características específicas del socio infantil debe ser también considerado
+    // para ser implementado en la capa de servicio o repositorio para mantener las responsabilidades separadas.
 }
