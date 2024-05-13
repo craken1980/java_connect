@@ -10,6 +10,15 @@ import java_connect.vista.*;
 public class Main {
 
     public static void main(String[] args) {
+        AppVisual();
+    }
+    
+    public static void AppVisual(){
+        GestionSocios gs = new GestionSocios();
+        gs.show();
+    }
+    
+    public static void AppConsola() {
         MenuPrincipal menuP = new MenuPrincipal();
         MenuSocios menuS = new MenuSocios();
         MenuInscripciones menuI = new MenuInscripciones();

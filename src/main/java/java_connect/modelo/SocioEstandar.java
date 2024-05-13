@@ -1,9 +1,11 @@
 package java_connect.modelo;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 
 @Entity
 @Table(name = "sociosestandar")
+@Transactional
 @PrimaryKeyJoinColumn(name = "socio_id")
 public class SocioEstandar extends Socio {
 

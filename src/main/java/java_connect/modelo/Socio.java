@@ -1,9 +1,11 @@
 package java_connect.modelo;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 
 @Entity
 @Table(name = "socios")
+@Transactional
 @Inheritance(strategy = InheritanceType.JOINED) // Específica el tipo de herencia entre Socio y sus subclases
 public abstract class Socio {
 

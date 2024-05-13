@@ -13,16 +13,24 @@ import javax.persistence.Persistence;
 public class Controlador {
 
     private EntityManager entityManager;
-    
+
     public Controlador() {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("myPersistenceUnit");
         this.entityManager = factory.createEntityManager();
     }
+
     public void addSocioEstandar(String nif, String tipoSeguro, String nombre) {
         Seguro seguro = new Seguro(tipoSeguro);
-        entityManager.persist(seguro); // Asegúrate de persistir primero el Seguro si no está gestionado.
         SocioEstandar socioEstandar = new SocioEstandar(nif, seguro, nombre);
-        entityManager.persist(socioEstandar);
+        entityManager.getTransaction().begin(); // Inicia la transacción
+        try {
+            entityManager.persist(seguro); // Persiste el seguro primero
+            entityManager.persist(socioEstandar); // Luego persiste el socio
+            entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+        } catch (Exception e) {
+            entityManager.getTransaction().rollback(); // Rollback en caso de error
+            throw e; // Opcionalmente relanza la excepción para manejo externo
+        }
     }
 
     public boolean validarSeguro(String tipoSeguro) {
@@ -31,16 +39,32 @@ public class Controlador {
 
     public void addSocioFederado(String nif, String federacionNombre, String nombre) {
         Federacion federacion = new Federacion(federacionNombre);
-        if (!entityManager.contains(federacion)) {
-            entityManager.persist(federacion);
-        }
+//        if (!entityManager.contains(federacion)) {
+//            entityManager.persist(federacion);
+//        }
         SocioFederado socioFederado = new SocioFederado(nif, federacion, nombre);
-        entityManager.persist(socioFederado);
+        entityManager.getTransaction().begin(); // Inicia la transacción
+        try {
+            entityManager.persist(federacion); // Persiste el seguro primero
+            entityManager.persist(socioFederado); // Luego persiste el socio
+            entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+        } catch (Exception e) {
+            entityManager.getTransaction().rollback(); // Rollback en caso de error
+            throw e; // Opcionalmente relanza la excepción para manejo externo
+        }
     }
 
     public void addSocioInfantil(String nombre) {
         SocioInfantil socioInfantil = new SocioInfantil(nombre);
-        entityManager.persist(socioInfantil);
+
+        entityManager.getTransaction().begin(); // Inicia la transacción
+        try {
+            entityManager.persist(socioInfantil); // Luego persiste el socio
+            entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+        } catch (Exception e) {
+            entityManager.getTransaction().rollback(); // Rollback en caso de error
+            throw e; // Opcionalmente relanza la excepción para manejo externo
+        }
     }
 
     public List<Socio> obtenerListaSocios() {
@@ -59,8 +83,15 @@ public class Controlador {
     public boolean eliminarSocio(int nsocio) {
         Socio socio = entityManager.find(Socio.class, nsocio);
         if (socio != null) {
-            entityManager.remove(socio);
-            return true;
+            entityManager.getTransaction().begin(); // Inicia la transacción
+            try {
+                entityManager.remove(socio);
+                entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+                return true;
+            } catch (Exception e) {
+                entityManager.getTransaction().rollback(); // Rollback en caso de error
+                throw e; // Opcionalmente relanza la excepción para manejo externo
+            }
         }
         return false;
     }
@@ -87,21 +118,36 @@ public class Controlador {
         SocioEstandar socio = entityManager.find(SocioEstandar.class, nsocio);
         if (socio != null) {
             Seguro seguro = new Seguro(nuevoTipoSeguro);
-            entityManager.persist(seguro); // Asegúrate de persistir el nuevo Seguro.
-            socio.setSeguro(seguro);
+            entityManager.getTransaction().begin(); // Inicia la transacción
+            try {
+                entityManager.persist(seguro); // Asegúrate de persistir el nuevo Seguro.
+                socio.setSeguro(seguro);
+                entityManager.refresh(socio);
+                entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+            } catch (Exception e) {
+                entityManager.getTransaction().rollback(); // Rollback en caso de error
+                throw e; // Opcionalmente relanza la excepción para manejo externo
+            }
         }
     }
 
     public void crearExcursion(String descripcion, Double precio, Date fecha, int dias) {
         Excursion excursion = new Excursion(descripcion, precio, fecha, dias);
-        entityManager.persist(excursion);
+        entityManager.getTransaction().begin(); // Inicia la transacción
+        try {
+            entityManager.persist(excursion); // Asegúrate de persistir el nuevo Seguro.
+            entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+        } catch (Exception e) {
+            entityManager.getTransaction().rollback(); // Rollback en caso de error
+            throw e; // Opcionalmente relanza la excepción para manejo externo
+        }
     }
 
     public List<Excursion> filtrarExcursiones(Date fechaInicio, Date fechaFin) {
         return entityManager.createQuery("SELECT e FROM Excursion e WHERE e.fecha BETWEEN :fechaInicio AND :fechaFin", Excursion.class)
-                            .setParameter("fechaInicio", fechaInicio)
-                            .setParameter("fechaFin", fechaFin)
-                            .getResultList();
+                .setParameter("fechaInicio", fechaInicio)
+                .setParameter("fechaFin", fechaFin)
+                .getResultList();
     }
 
     public List<Excursion> obtenerListaExcursiones() {
@@ -110,9 +156,9 @@ public class Controlador {
 
     public List<Inscripcion> obtenerListaInscripciones(String nombre, Date fecha) {
         return entityManager.createQuery("SELECT i FROM Inscripcion i WHERE i.socio.nombre = :nombre AND i.excursion.fecha = :fecha", Inscripcion.class)
-                            .setParameter("nombre", nombre)
-                            .setParameter("fecha", fecha)
-                            .getResultList();
+                .setParameter("nombre", nombre)
+                .setParameter("fecha", fecha)
+                .getResultList();
     }
 
     public void crearInscripcion(int nsocio, int nexcursion) {
@@ -120,14 +166,28 @@ public class Controlador {
         Excursion excursion = entityManager.find(Excursion.class, nexcursion);
         if (socio != null && excursion != null) {
             Inscripcion inscripcion = new Inscripcion(socio, excursion);
-            entityManager.persist(inscripcion);
+            entityManager.getTransaction().begin(); // Inicia la transacción
+            try {
+                entityManager.persist(inscripcion); // Asegúrate de persistir el nuevo Seguro.
+                entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+            } catch (Exception e) {
+                entityManager.getTransaction().rollback(); // Rollback en caso de error
+                throw e; // Opcionalmente relanza la excepción para manejo externo
+            }
         }
     }
 
     public boolean eliminarInscripcion(int ninscripcion) {
         Inscripcion inscripcion = entityManager.find(Inscripcion.class, ninscripcion);
         if (inscripcion != null) {
-            entityManager.remove(inscripcion);
+            entityManager.getTransaction().begin(); // Inicia la transacción
+            try {
+                entityManager.persist(inscripcion); // Asegúrate de persistir el nuevo Seguro.
+                entityManager.getTransaction().commit(); // Commit la transacción si todo está correcto
+            } catch (Exception e) {
+                entityManager.getTransaction().rollback(); // Rollback en caso de error
+                throw e; // Opcionalmente relanza la excepción para manejo externo
+            }
             return true;
         }
         return false;
